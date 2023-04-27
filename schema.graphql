@@ -4,19 +4,28 @@
 type User {
   id: ID!
   name: String
+  username: String
   email: String
   password: PasswordState
-  posts(where: PostWhereInput! = {}, orderBy: [PostOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PostWhereUniqueInput): [Post!]
-  postsCount(where: PostWhereInput! = {}): Int
   avatar: Image
+  links(where: LinkWhereInput! = {}, orderBy: [LinkOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LinkWhereUniqueInput): [Link!]
+  linksCount(where: LinkWhereInput! = {}): Int
   createdAt: DateTime
   isAdmin: Boolean
+  posts(where: PostWhereInput! = {}, orderBy: [PostOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PostWhereUniqueInput): [Post!]
+  postsCount(where: PostWhereInput! = {}): Int
   ownedTags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   ownedTagsCount(where: TagWhereInput! = {}): Int
   ownedImages(where: ImageWhereInput! = {}, orderBy: [ImageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ImageWhereUniqueInput): [Image!]
   ownedImagesCount(where: ImageWhereInput! = {}): Int
   ownedFiles(where: FileWhereInput! = {}, orderBy: [FileOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: FileWhereUniqueInput): [File!]
   ownedFilesCount(where: FileWhereInput! = {}): Int
+  ownedContents(where: ContentWhereInput! = {}, orderBy: [ContentOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ContentWhereUniqueInput): [Content!]
+  ownedContentsCount(where: ContentWhereInput! = {}): Int
+  ownedSkills(where: SkillWhereInput! = {}, orderBy: [SkillOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SkillWhereUniqueInput): [Skill!]
+  ownedSkillsCount(where: SkillWhereInput! = {}): Int
+  ownedLinks(where: LinkWhereInput! = {}, orderBy: [LinkOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LinkWhereUniqueInput): [Link!]
+  ownedLinksCount(where: LinkWhereInput! = {}): Int
 }
 
 type PasswordState {
@@ -27,6 +36,7 @@ scalar DateTime @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339
 
 input UserWhereUniqueInput {
   id: ID
+  username: String
   email: String
 }
 
@@ -36,14 +46,19 @@ input UserWhereInput {
   NOT: [UserWhereInput!]
   id: IDFilter
   name: StringFilter
+  username: StringFilter
   email: StringFilter
-  posts: PostManyRelationFilter
   avatar: ImageWhereInput
+  links: LinkManyRelationFilter
   createdAt: DateTimeNullableFilter
   isAdmin: BooleanFilter
+  posts: PostManyRelationFilter
   ownedTags: TagManyRelationFilter
   ownedImages: ImageManyRelationFilter
   ownedFiles: FileManyRelationFilter
+  ownedContents: ContentManyRelationFilter
+  ownedSkills: SkillManyRelationFilter
+  ownedLinks: LinkManyRelationFilter
 }
 
 input IDFilter {
@@ -85,10 +100,10 @@ input NestedStringFilter {
   not: NestedStringFilter
 }
 
-input PostManyRelationFilter {
-  every: PostWhereInput
-  some: PostWhereInput
-  none: PostWhereInput
+input LinkManyRelationFilter {
+  every: LinkWhereInput
+  some: LinkWhereInput
+  none: LinkWhereInput
 }
 
 input DateTimeNullableFilter {
@@ -105,6 +120,12 @@ input DateTimeNullableFilter {
 input BooleanFilter {
   equals: Boolean
   not: BooleanFilter
+}
+
+input PostManyRelationFilter {
+  every: PostWhereInput
+  some: PostWhereInput
+  none: PostWhereInput
 }
 
 input TagManyRelationFilter {
@@ -125,9 +146,22 @@ input FileManyRelationFilter {
   none: FileWhereInput
 }
 
+input ContentManyRelationFilter {
+  every: ContentWhereInput
+  some: ContentWhereInput
+  none: ContentWhereInput
+}
+
+input SkillManyRelationFilter {
+  every: SkillWhereInput
+  some: SkillWhereInput
+  none: SkillWhereInput
+}
+
 input UserOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  username: OrderDirection
   email: OrderDirection
   createdAt: OrderDirection
   isAdmin: OrderDirection
@@ -140,15 +174,33 @@ enum OrderDirection {
 
 input UserUpdateInput {
   name: String
+  username: String
   email: String
   password: String
-  posts: PostRelateToManyForUpdateInput
   avatar: ImageRelateToOneForUpdateInput
+  links: LinkRelateToManyForUpdateInput
   createdAt: DateTime
   isAdmin: Boolean
+  posts: PostRelateToManyForUpdateInput
   ownedTags: TagRelateToManyForUpdateInput
   ownedImages: ImageRelateToManyForUpdateInput
   ownedFiles: FileRelateToManyForUpdateInput
+  ownedContents: ContentRelateToManyForUpdateInput
+  ownedSkills: SkillRelateToManyForUpdateInput
+  ownedLinks: LinkRelateToManyForUpdateInput
+}
+
+input ImageRelateToOneForUpdateInput {
+  create: ImageCreateInput
+  connect: ImageWhereUniqueInput
+  disconnect: Boolean
+}
+
+input LinkRelateToManyForUpdateInput {
+  disconnect: [LinkWhereUniqueInput!]
+  set: [LinkWhereUniqueInput!]
+  create: [LinkCreateInput!]
+  connect: [LinkWhereUniqueInput!]
 }
 
 input PostRelateToManyForUpdateInput {
@@ -156,12 +208,6 @@ input PostRelateToManyForUpdateInput {
   set: [PostWhereUniqueInput!]
   create: [PostCreateInput!]
   connect: [PostWhereUniqueInput!]
-}
-
-input ImageRelateToOneForUpdateInput {
-  create: ImageCreateInput
-  connect: ImageWhereUniqueInput
-  disconnect: Boolean
 }
 
 input TagRelateToManyForUpdateInput {
@@ -185,6 +231,20 @@ input FileRelateToManyForUpdateInput {
   connect: [FileWhereUniqueInput!]
 }
 
+input ContentRelateToManyForUpdateInput {
+  disconnect: [ContentWhereUniqueInput!]
+  set: [ContentWhereUniqueInput!]
+  create: [ContentCreateInput!]
+  connect: [ContentWhereUniqueInput!]
+}
+
+input SkillRelateToManyForUpdateInput {
+  disconnect: [SkillWhereUniqueInput!]
+  set: [SkillWhereUniqueInput!]
+  create: [SkillCreateInput!]
+  connect: [SkillWhereUniqueInput!]
+}
+
 input UserUpdateArgs {
   where: UserWhereUniqueInput!
   data: UserUpdateInput!
@@ -192,25 +252,35 @@ input UserUpdateArgs {
 
 input UserCreateInput {
   name: String
+  username: String
   email: String
   password: String
-  posts: PostRelateToManyForCreateInput
   avatar: ImageRelateToOneForCreateInput
+  links: LinkRelateToManyForCreateInput
   createdAt: DateTime
   isAdmin: Boolean
+  posts: PostRelateToManyForCreateInput
   ownedTags: TagRelateToManyForCreateInput
   ownedImages: ImageRelateToManyForCreateInput
   ownedFiles: FileRelateToManyForCreateInput
-}
-
-input PostRelateToManyForCreateInput {
-  create: [PostCreateInput!]
-  connect: [PostWhereUniqueInput!]
+  ownedContents: ContentRelateToManyForCreateInput
+  ownedSkills: SkillRelateToManyForCreateInput
+  ownedLinks: LinkRelateToManyForCreateInput
 }
 
 input ImageRelateToOneForCreateInput {
   create: ImageCreateInput
   connect: ImageWhereUniqueInput
+}
+
+input LinkRelateToManyForCreateInput {
+  create: [LinkCreateInput!]
+  connect: [LinkWhereUniqueInput!]
+}
+
+input PostRelateToManyForCreateInput {
+  create: [PostCreateInput!]
+  connect: [PostWhereUniqueInput!]
 }
 
 input TagRelateToManyForCreateInput {
@@ -226,6 +296,16 @@ input ImageRelateToManyForCreateInput {
 input FileRelateToManyForCreateInput {
   create: [FileCreateInput!]
   connect: [FileWhereUniqueInput!]
+}
+
+input ContentRelateToManyForCreateInput {
+  create: [ContentCreateInput!]
+  connect: [ContentWhereUniqueInput!]
+}
+
+input SkillRelateToManyForCreateInput {
+  create: [SkillCreateInput!]
+  connect: [SkillWhereUniqueInput!]
 }
 
 type Post {
@@ -338,6 +418,10 @@ type Tag {
   name: String
   posts(where: PostWhereInput! = {}, orderBy: [PostOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PostWhereUniqueInput): [Post!]
   postsCount(where: PostWhereInput! = {}): Int
+  contents(where: ContentWhereInput! = {}, orderBy: [ContentOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ContentWhereUniqueInput): [Content!]
+  contentsCount(where: ContentWhereInput! = {}): Int
+  skills(where: SkillWhereInput! = {}, orderBy: [SkillOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SkillWhereUniqueInput): [Skill!]
+  skillsCount(where: SkillWhereInput! = {}): Int
   owner: User
 }
 
@@ -352,6 +436,8 @@ input TagWhereInput {
   id: IDFilter
   name: StringFilter
   posts: PostManyRelationFilter
+  contents: ContentManyRelationFilter
+  skills: SkillManyRelationFilter
   owner: UserWhereInput
 }
 
@@ -363,6 +449,8 @@ input TagOrderByInput {
 input TagUpdateInput {
   name: String
   posts: PostRelateToManyForUpdateInput
+  contents: ContentRelateToManyForUpdateInput
+  skills: SkillRelateToManyForUpdateInput
   owner: UserRelateToOneForUpdateInput
 }
 
@@ -374,6 +462,8 @@ input TagUpdateArgs {
 input TagCreateInput {
   name: String
   posts: PostRelateToManyForCreateInput
+  contents: ContentRelateToManyForCreateInput
+  skills: SkillRelateToManyForCreateInput
   owner: UserRelateToOneForCreateInput
 }
 
@@ -384,6 +474,8 @@ type Image {
   posts(where: PostWhereInput! = {}, orderBy: [PostOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PostWhereUniqueInput): [Post!]
   postsCount(where: PostWhereInput! = {}): Int
   users: User
+  contents(where: ContentWhereInput! = {}, orderBy: [ContentOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ContentWhereUniqueInput): [Content!]
+  contentsCount(where: ContentWhereInput! = {}): Int
   owner: User
 }
 
@@ -415,6 +507,7 @@ input ImageWhereInput {
   altText: StringFilter
   posts: PostManyRelationFilter
   users: UserWhereInput
+  contents: ContentManyRelationFilter
   owner: UserWhereInput
 }
 
@@ -428,6 +521,7 @@ input ImageUpdateInput {
   image: ImageFieldInput
   posts: PostRelateToManyForUpdateInput
   users: UserRelateToOneForUpdateInput
+  contents: ContentRelateToManyForUpdateInput
   owner: UserRelateToOneForUpdateInput
 }
 
@@ -448,6 +542,7 @@ input ImageCreateInput {
   image: ImageFieldInput
   posts: PostRelateToManyForCreateInput
   users: UserRelateToOneForCreateInput
+  contents: ContentRelateToManyForCreateInput
   owner: UserRelateToOneForCreateInput
 }
 
@@ -508,6 +603,272 @@ input FileCreateInput {
   owner: UserRelateToOneForCreateInput
 }
 
+type Content {
+  id: ID!
+  category: String
+  title: String
+  period: String
+  subtitle: String
+  state: String
+  description: String
+  images(where: ImageWhereInput! = {}, orderBy: [ImageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ImageWhereUniqueInput): [Image!]
+  imagesCount(where: ImageWhereInput! = {}): Int
+  links(where: LinkWhereInput! = {}, orderBy: [LinkOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LinkWhereUniqueInput): [Link!]
+  linksCount(where: LinkWhereInput! = {}): Int
+  tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
+  tagsCount(where: TagWhereInput! = {}): Int
+  published: Boolean
+  owner: User
+}
+
+input ContentWhereUniqueInput {
+  id: ID
+}
+
+input ContentWhereInput {
+  AND: [ContentWhereInput!]
+  OR: [ContentWhereInput!]
+  NOT: [ContentWhereInput!]
+  id: IDFilter
+  category: StringFilter
+  title: StringFilter
+  period: StringFilter
+  subtitle: StringFilter
+  state: StringFilter
+  description: StringFilter
+  images: ImageManyRelationFilter
+  links: LinkManyRelationFilter
+  tags: TagManyRelationFilter
+  published: BooleanFilter
+  owner: UserWhereInput
+}
+
+input ContentOrderByInput {
+  id: OrderDirection
+  category: OrderDirection
+  title: OrderDirection
+  period: OrderDirection
+  subtitle: OrderDirection
+  state: OrderDirection
+  description: OrderDirection
+  published: OrderDirection
+}
+
+input ContentUpdateInput {
+  category: String
+  title: String
+  period: String
+  subtitle: String
+  state: String
+  description: String
+  images: ImageRelateToManyForUpdateInput
+  links: LinkRelateToManyForUpdateInput
+  tags: TagRelateToManyForUpdateInput
+  published: Boolean
+  owner: UserRelateToOneForUpdateInput
+}
+
+input ContentUpdateArgs {
+  where: ContentWhereUniqueInput!
+  data: ContentUpdateInput!
+}
+
+input ContentCreateInput {
+  category: String
+  title: String
+  period: String
+  subtitle: String
+  state: String
+  description: String
+  images: ImageRelateToManyForCreateInput
+  links: LinkRelateToManyForCreateInput
+  tags: TagRelateToManyForCreateInput
+  published: Boolean
+  owner: UserRelateToOneForCreateInput
+}
+
+type Skill {
+  id: ID!
+  category: String
+  title: String
+  description: String
+  score: Int
+  scoreMax: Int
+  href: String
+  links(where: LinkWhereInput! = {}, orderBy: [LinkOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LinkWhereUniqueInput): [Link!]
+  linksCount(where: LinkWhereInput! = {}): Int
+  tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
+  tagsCount(where: TagWhereInput! = {}): Int
+  published: Boolean
+  owner: User
+}
+
+input SkillWhereUniqueInput {
+  id: ID
+}
+
+input SkillWhereInput {
+  AND: [SkillWhereInput!]
+  OR: [SkillWhereInput!]
+  NOT: [SkillWhereInput!]
+  id: IDFilter
+  category: StringFilter
+  title: StringFilter
+  description: StringFilter
+  score: IntFilter
+  scoreMax: IntFilter
+  href: StringFilter
+  links: LinkManyRelationFilter
+  tags: TagManyRelationFilter
+  published: BooleanFilter
+  owner: UserWhereInput
+}
+
+input IntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntFilter
+}
+
+input SkillOrderByInput {
+  id: OrderDirection
+  category: OrderDirection
+  title: OrderDirection
+  description: OrderDirection
+  score: OrderDirection
+  scoreMax: OrderDirection
+  href: OrderDirection
+  published: OrderDirection
+}
+
+input SkillUpdateInput {
+  category: String
+  title: String
+  description: String
+  score: Int
+  scoreMax: Int
+  href: String
+  links: LinkRelateToManyForUpdateInput
+  tags: TagRelateToManyForUpdateInput
+  published: Boolean
+  owner: UserRelateToOneForUpdateInput
+}
+
+input SkillUpdateArgs {
+  where: SkillWhereUniqueInput!
+  data: SkillUpdateInput!
+}
+
+input SkillCreateInput {
+  category: String
+  title: String
+  description: String
+  score: Int
+  scoreMax: Int
+  href: String
+  links: LinkRelateToManyForCreateInput
+  tags: TagRelateToManyForCreateInput
+  published: Boolean
+  owner: UserRelateToOneForCreateInput
+}
+
+type Link {
+  id: ID!
+  title: String
+  href: String
+  icon: String
+  target: String
+  published: Boolean
+  users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
+  usersCount(where: UserWhereInput! = {}): Int
+  contents(where: ContentWhereInput! = {}, orderBy: [ContentOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ContentWhereUniqueInput): [Content!]
+  contentsCount(where: ContentWhereInput! = {}): Int
+  skills(where: SkillWhereInput! = {}, orderBy: [SkillOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SkillWhereUniqueInput): [Skill!]
+  skillsCount(where: SkillWhereInput! = {}): Int
+  owner: User
+}
+
+input LinkWhereUniqueInput {
+  id: ID
+}
+
+input LinkWhereInput {
+  AND: [LinkWhereInput!]
+  OR: [LinkWhereInput!]
+  NOT: [LinkWhereInput!]
+  id: IDFilter
+  title: StringFilter
+  href: StringFilter
+  icon: StringFilter
+  target: StringFilter
+  published: BooleanFilter
+  users: UserManyRelationFilter
+  contents: ContentManyRelationFilter
+  skills: SkillManyRelationFilter
+  owner: UserWhereInput
+}
+
+input UserManyRelationFilter {
+  every: UserWhereInput
+  some: UserWhereInput
+  none: UserWhereInput
+}
+
+input LinkOrderByInput {
+  id: OrderDirection
+  title: OrderDirection
+  href: OrderDirection
+  icon: OrderDirection
+  target: OrderDirection
+  published: OrderDirection
+}
+
+input LinkUpdateInput {
+  title: String
+  href: String
+  icon: String
+  target: String
+  published: Boolean
+  users: UserRelateToManyForUpdateInput
+  contents: ContentRelateToManyForUpdateInput
+  skills: SkillRelateToManyForUpdateInput
+  owner: UserRelateToOneForUpdateInput
+}
+
+input UserRelateToManyForUpdateInput {
+  disconnect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
+input LinkUpdateArgs {
+  where: LinkWhereUniqueInput!
+  data: LinkUpdateInput!
+}
+
+input LinkCreateInput {
+  title: String
+  href: String
+  icon: String
+  target: String
+  published: Boolean
+  users: UserRelateToManyForCreateInput
+  contents: ContentRelateToManyForCreateInput
+  skills: SkillRelateToManyForCreateInput
+  owner: UserRelateToOneForCreateInput
+}
+
+input UserRelateToManyForCreateInput {
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -544,6 +905,24 @@ type Mutation {
   updateFiles(data: [FileUpdateArgs!]!): [File]
   deleteFile(where: FileWhereUniqueInput!): File
   deleteFiles(where: [FileWhereUniqueInput!]!): [File]
+  createContent(data: ContentCreateInput!): Content
+  createContents(data: [ContentCreateInput!]!): [Content]
+  updateContent(where: ContentWhereUniqueInput!, data: ContentUpdateInput!): Content
+  updateContents(data: [ContentUpdateArgs!]!): [Content]
+  deleteContent(where: ContentWhereUniqueInput!): Content
+  deleteContents(where: [ContentWhereUniqueInput!]!): [Content]
+  createSkill(data: SkillCreateInput!): Skill
+  createSkills(data: [SkillCreateInput!]!): [Skill]
+  updateSkill(where: SkillWhereUniqueInput!, data: SkillUpdateInput!): Skill
+  updateSkills(data: [SkillUpdateArgs!]!): [Skill]
+  deleteSkill(where: SkillWhereUniqueInput!): Skill
+  deleteSkills(where: [SkillWhereUniqueInput!]!): [Skill]
+  createLink(data: LinkCreateInput!): Link
+  createLinks(data: [LinkCreateInput!]!): [Link]
+  updateLink(where: LinkWhereUniqueInput!, data: LinkUpdateInput!): Link
+  updateLinks(data: [LinkUpdateArgs!]!): [Link]
+  deleteLink(where: LinkWhereUniqueInput!): Link
+  deleteLinks(where: [LinkWhereUniqueInput!]!): [Link]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
 }
@@ -575,6 +954,15 @@ type Query {
   files(where: FileWhereInput! = {}, orderBy: [FileOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: FileWhereUniqueInput): [File!]
   file(where: FileWhereUniqueInput!): File
   filesCount(where: FileWhereInput! = {}): Int
+  contents(where: ContentWhereInput! = {}, orderBy: [ContentOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ContentWhereUniqueInput): [Content!]
+  content(where: ContentWhereUniqueInput!): Content
+  contentsCount(where: ContentWhereInput! = {}): Int
+  skills(where: SkillWhereInput! = {}, orderBy: [SkillOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SkillWhereUniqueInput): [Skill!]
+  skill(where: SkillWhereUniqueInput!): Skill
+  skillsCount(where: SkillWhereInput! = {}): Int
+  links(where: LinkWhereInput! = {}, orderBy: [LinkOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LinkWhereUniqueInput): [Link!]
+  link(where: LinkWhereUniqueInput!): Link
+  linksCount(where: LinkWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }

@@ -52,6 +52,12 @@ export const lists: Lists = {
       //   if no name is provided, an error will be displayed
       name: text({ validation: { isRequired: true } }),
 
+      username: text({
+        validation: { isRequired: true },
+        isIndexed: "unique",
+        isFilterable: true,
+      }),
+
       email: text({
         validation: { isRequired: true },
         // by adding isIndexed: 'unique', we're saying that no user can have the same
@@ -60,10 +66,6 @@ export const lists: Lists = {
       }),
 
       password: password({ validation: { isRequired: true } }),
-
-      // we can use this field to see what Posts this User has authored
-      //   more on that in the Post list below
-      posts: relationship({ ref: "Post.author", many: true }),
 
       avatar: relationship({
         ref: "Image.users",
@@ -78,16 +80,65 @@ export const lists: Lists = {
         },
       }),
 
+      links: relationship({
+        ref: "Link.users",
+        many: true,
+        ui: {
+          displayMode: "cards",
+          cardFields: ["title", "href"],
+          inlineEdit: {
+            fields: ["title", "href", "icon", "target", "published"],
+          },
+          linkToItem: true,
+          inlineConnect: true,
+          inlineCreate: {
+            fields: ["title", "href", "icon", "target", "published", "owner"],
+          },
+        },
+      }),
+
       createdAt: timestamp({
         // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: "now" },
       }),
       isAdmin: checkbox(),
-
-      ownedTags: relationship({ ref: "Tag.owner", many: true }),
-      ownedImages: relationship({ ref: "Image.owner", many: true }),
-      ownedFiles: relationship({ ref: "File.owner", many: true }),
-      ownedContents: relationship({ ref: "Content.owner", many: true }),
+      // we can use this field to see what Posts this User has authored
+      //   more on that in the Post list below
+      posts: relationship({
+        ref: "Post.author",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      ownedTags: relationship({
+        ref: "Tag.owner",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      ownedImages: relationship({
+        ref: "Image.owner",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      ownedFiles: relationship({
+        ref: "File.owner",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      ownedContents: relationship({
+        ref: "Content.owner",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      ownedSkills: relationship({
+        ref: "Skill.owner",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      ownedLinks: relationship({
+        ref: "Link.owner",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
     },
   }),
   Post: list({
@@ -249,7 +300,22 @@ export const lists: Lists = {
     fields: {
       name: text(),
       // this can be helpful to find out all the Posts associated with a Tag
-      posts: relationship({ ref: "Post.tags", many: true }),
+      posts: relationship({
+        ref: "Post.tags",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      contents: relationship({
+        ref: "Content.tags",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      skills: relationship({
+        ref: "Skill.tags",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+
       owner: relationship({
         ref: "User.ownedTags",
         ui: {
@@ -290,9 +356,21 @@ export const lists: Lists = {
     fields: {
       altText: text(),
       image: image({ storage: "minioImage" }),
-      posts: relationship({ ref: "Post.images", many: true }),
-      users: relationship({ ref: "User.avatar", many: false }),
-      contents: relationship({ ref: "Content.images", many: true }),
+      posts: relationship({
+        ref: "Post.images",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      users: relationship({
+        ref: "User.avatar",
+        many: false,
+      }),
+      contents: relationship({
+        ref: "Content.images",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+
       owner: relationship({
         ref: "User.ownedImages",
         ui: {
@@ -337,7 +415,11 @@ export const lists: Lists = {
     fields: {
       altText: text(),
       file: file({ storage: "minioFile" }),
-      posts: relationship({ ref: "Post.files", many: true }),
+      posts: relationship({
+        ref: "Post.files",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
       owner: relationship({
         ref: "User.ownedFiles",
         ui: {
@@ -425,7 +507,42 @@ export const lists: Lists = {
         },
       }),
 
-      published: checkbox(),
+      links: relationship({
+        ref: "Link.contents",
+        many: true,
+        ui: {
+          displayMode: "cards",
+          cardFields: ["title", "href"],
+          inlineEdit: {
+            fields: ["title", "href", "icon", "target", "published"],
+          },
+          linkToItem: true,
+          inlineConnect: true,
+          inlineCreate: {
+            fields: ["title", "href", "icon", "target", "published", "owner"],
+          },
+        },
+      }),
+
+      tags: relationship({
+        // we could have used 'Tag', but then the relationship would only be 1-way
+        ref: "Tag.contents",
+
+        // a Post can have many Tags, not just one
+        many: true,
+
+        // this is some customisations for changing how this will look in the AdminUI
+        ui: {
+          displayMode: "cards",
+          cardFields: ["name"],
+          inlineEdit: { fields: ["name"] },
+          linkToItem: true,
+          inlineConnect: true,
+          inlineCreate: { fields: ["name", "owner"] },
+        },
+      }),
+
+      published: checkbox({ defaultValue: true }),
 
       owner: relationship({
         ref: "User.ownedContents",
@@ -487,11 +604,132 @@ export const lists: Lists = {
 
       href: text(),
 
-      published: checkbox(),
+      links: relationship({
+        ref: "Link.skills",
+        many: true,
+        ui: {
+          displayMode: "cards",
+          cardFields: ["title", "href"],
+          inlineEdit: {
+            fields: ["title", "href", "icon", "target", "published"],
+          },
+          linkToItem: true,
+          inlineConnect: true,
+          inlineCreate: {
+            fields: ["title", "href", "icon", "target", "published", "owner"],
+          },
+        },
+      }),
+
+      tags: relationship({
+        // we could have used 'Tag', but then the relationship would only be 1-way
+        ref: "Tag.skills",
+
+        // a Post can have many Tags, not just one
+        many: true,
+
+        // this is some customisations for changing how this will look in the AdminUI
+        ui: {
+          displayMode: "cards",
+          cardFields: ["name"],
+          inlineEdit: { fields: ["name"] },
+          linkToItem: true,
+          inlineConnect: true,
+          inlineCreate: { fields: ["name", "owner"] },
+        },
+      }),
+
+      published: checkbox({ defaultValue: true }),
+
+      owner: relationship({
+        ref: "User.ownedSkills",
+        ui: {
+          displayMode: "cards",
+          cardFields: ["name"],
+          linkToItem: true,
+          inlineConnect: true,
+        },
+        many: false,
+      }),
     },
   }),
 
   /**
    *
    */
+  Link: list({
+    access: {
+      operation: {
+        query: isAdmin,
+        create: isAdmin,
+        update: isAdmin,
+        delete: isAdmin,
+      },
+      // item: {
+      //   create: isAdmin,
+      //   update: isAuthorized
+      //   delete: isAdmin
+      // },
+      filter: {
+        query: filterByOwner,
+        update: filterByOwner,
+        delete: filterByOwner,
+      },
+    },
+    fields: {
+      title: text({ validation: { isRequired: true } }),
+      href: text({ validation: { isRequired: true } }),
+      icon: select({
+        options: [
+          { value: "mail", label: "Mail" },
+          { value: "npm", label: "NPM" },
+          { value: "github", label: "GitHub" },
+          { value: "home", label: "Home Page" },
+          { value: "site", label: "Web Site" },
+          { value: "nuget", label: "Nuget" },
+          { value: "ios", label: "iOS" },
+          { value: "windows", label: "Windows Store" },
+          { value: "android", label: "Google play" },
+          { value: "blog", label: "Blog" },
+        ],
+        validation: { isRequired: true },
+      }),
+      target: select({
+        options: [
+          { value: "_self", label: "Self" },
+          { value: "_blank", label: "New page" },
+        ],
+        validation: { isRequired: true },
+      }),
+
+      published: checkbox({ defaultValue: true }),
+
+      users: relationship({
+        ref: "User.links",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      contents: relationship({
+        ref: "Content.links",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+      skills: relationship({
+        ref: "Skill.links",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+
+      owner: relationship({
+        ref: "User.ownedLinks",
+        ui: {
+          displayMode: "cards",
+          cardFields: ["name"],
+          linkToItem: true,
+          inlineConnect: true,
+        },
+        many: false,
+      }),
+    },
+  }),
 };
