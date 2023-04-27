@@ -62,7 +62,7 @@ const filterByOwner = <TListInfo extends BaseListTypeInfo>({
     };
   }
 
-  return true;
+  return false;
 };
 
 const filterByAuthor = ({ session }: { session: Session }) => {
