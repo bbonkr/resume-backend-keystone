@@ -27,8 +27,6 @@ jobs:
       - name: Build
         run: |
           npm run build
-        env:
-          NODE_ENV: production
 
       - name: get-version
         id: get_version
