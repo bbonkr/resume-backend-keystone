@@ -1,5 +1,7 @@
 name: docker image
 
+# Won't use it until I find a way to reduce the image size.
+
 on:
   release:
     types: [published]

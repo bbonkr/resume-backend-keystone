@@ -1,7 +1,5 @@
 FROM node:18-bullseye-slim
 
-USER node
-
 WORKDIR /usr/src/app
 
 COPY --chown=node:node . .
@@ -19,5 +17,7 @@ ENV PORT=3000
 ENV NODE_ENV=production
 
 EXPOSE ${PORT}
+
+USER node
 
 CMD ["npm", "start"]
