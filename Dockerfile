@@ -1,34 +1,21 @@
-# Install dependencies only
-FROM node:20-bullseye-slim AS deps
-
-WORKDIR /usr/src/app
-
-COPY package*.json ./
-
-RUN npm install
-
-# 
-FROM node:20-bullseye-slim AS builder
-
-WORKDIR /usr/src/app
-
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-
-COPY . .
-
-ENV NODE_ENV=production
-
-RUN npm run build
-
-FROM node:20-alpine AS runner
+FROM node:18-bullseye-slim
 
 USER node
 
 WORKDIR /usr/src/app
 
-COPY --from=builder --chown=nextjs:node . .
+COPY --chown=node:node . .
+
+RUN npm install
+
+ENV NODE_ENV=production
+# Requires SESSION_SECRET for build
+ENV SESSION_SECRET=cf6d63747aef3b3180bc19d4a5108f739cfc09408b428c91f936e231d2698431 
+
+RUN npm run build
 
 ENV PORT=3000
+
 ENV NODE_ENV=production
 
 EXPOSE ${PORT}

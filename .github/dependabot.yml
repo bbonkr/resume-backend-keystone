@@ -1,0 +1,14 @@
+version: 2
+
+updates:
+
+  - package-ecosystem: npm
+    assignees:
+      - "bbonkr"
+    directory: /
+    target-branch: "main"
+    schedule:
+      interval: weekly
+    labels:
+      - "npm"
+      - "dependencies"

@@ -396,10 +396,10 @@ export const lists: Lists = {
     //   access: allowAll, // import { allowAll } from "@keystone-6/core/access";
     access: {
       operation: {
-        query: isAdmin,
-        create: isAdmin,
-        update: isAdmin,
-        delete: isAdmin,
+        query: isAuthorized,
+        create: isAuthorized,
+        update: isAuthorized,
+        delete: isAuthorized,
       },
       // item: {
       //   create: isAdmin,
@@ -444,10 +444,10 @@ export const lists: Lists = {
   Content: list({
     access: {
       operation: {
-        query: isAdmin,
-        create: isAdmin,
-        update: isAdmin,
-        delete: isAdmin,
+        query: isAuthorized,
+        create: isAuthorized,
+        update: isAuthorized,
+        delete: isAuthorized,
       },
       // item: {
       //   create: isAdmin,
@@ -563,10 +563,10 @@ export const lists: Lists = {
   Skill: list({
     access: {
       operation: {
-        query: isAdmin,
-        create: isAdmin,
-        update: isAdmin,
-        delete: isAdmin,
+        query: isAuthorized,
+        create: isAuthorized,
+        update: isAuthorized,
+        delete: isAuthorized,
       },
       // item: {
       //   create: isAdmin,

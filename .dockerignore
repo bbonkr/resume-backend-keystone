@@ -1,2 +1,9 @@
+.keystone/
+data/
+node_modules/
+.dockerignore
+.env
+.gitignore
+docker-compose.yml
 npm-debug.log
 README.md

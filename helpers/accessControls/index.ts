@@ -46,9 +46,7 @@ const filterOwnedItems = ({ session }: { session: Session }) => {
   return false;
 };
 
-const filterByOwner = <TListInfo extends BaseListTypeInfo>({
-  session,
-}: BaseAccessArgs<TListInfo>) => {
+const filterByOwner = ({ session }: { session: Session }) => {
   if (session?.data?.isAdmin ?? true) {
     return true;
   }
