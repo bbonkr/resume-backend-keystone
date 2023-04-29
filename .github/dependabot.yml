@@ -5,10 +5,20 @@ updates:
   - package-ecosystem: npm
     assignees:
       - "bbonkr"
-    directory: /
+    directory: "/"
     target-branch: "main"
     schedule:
       interval: weekly
     labels:
       - "npm"
+      - "dependencies"
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    assignees:
+      - "bbonkr"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    labels:
       - "dependencies"
