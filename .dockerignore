@@ -1,9 +1,12 @@
+.github/
 .keystone/
 data/
 node_modules/
 .dockerignore
 .env
 .gitignore
+docker-compose.sample.yml
 docker-compose.yml
+LICENSE
 npm-debug.log
 README.md
