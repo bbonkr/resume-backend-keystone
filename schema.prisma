@@ -12,29 +12,52 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String    @default("")
-  username      String    @unique @default("")
-  email         String    @unique @default("")
-  password      String
-  avatar        Image?    @relation("Image_users")
-  links         Link[]    @relation("Link_users")
-  createdAt     DateTime? @default(now())
-  isAdmin       Boolean   @default(false)
-  posts         Post[]    @relation("Post_author")
-  ownedTags     Tag[]     @relation("Tag_owner")
-  ownedImages   Image[]   @relation("Image_owner")
-  ownedFiles    File[]    @relation("File_owner")
-  ownedContents Content[] @relation("Content_owner")
-  ownedSkills   Skill[]   @relation("Skill_owner")
-  ownedLinks    Link[]    @relation("Link_owner")
+  id                     String            @id @default(cuid())
+  name                   String            @default("")
+  username               String            @unique @default("")
+  email                  String            @unique @default("")
+  password               String
+  avatar                 Image?            @relation("Image_users")
+  links                  Link[]            @relation("Link_users")
+  createdAt              DateTime?         @default(now())
+  isAdmin                Boolean           @default(false)
+  posts                  Post[]            @relation("Post_author")
+  ownedTags              Tag[]             @relation("Tag_owner")
+  ownedImages            Image[]           @relation("Image_owner")
+  ownedFiles             File[]            @relation("File_owner")
+  ownedContents          Content[]         @relation("Content_owner")
+  ownedSkills            Skill[]           @relation("Skill_owner")
+  ownedLinks             Link[]            @relation("Link_owner")
+  ownedAboutMe           AboutMe?          @relation("AboutMe_owner")
+  ownedSkillCategories   SkillCategory[]   @relation("SkillCategory_owner")
+  ownedContentCategories ContentCategory[] @relation("ContentCategory_owner")
+}
+
+model AboutMe {
+  id          String  @id @default(cuid())
+  title       String  @default("")
+  subtitle    String  @default("")
+  intro       String  @default("")
+  bio         String  @default("")
+  name        String  @default("")
+  nameEn      String  @default("")
+  siteTitle   String  @default("")
+  siteTitleEn String  @default("")
+  url         String  @default("")
+  twitter     String  @default("")
+  github      String  @default("")
+  facebook    String  @default("")
+  linkedin    String  @default("")
+  instagram   String  @default("")
+  owner       User?   @relation("AboutMe_owner", fields: [ownerId], references: [id])
+  ownerId     String? @unique @map("owner")
 }
 
 model Post {
   id       String  @id @default(cuid())
   title    String  @default("")
   content  String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
-  markdown String? @map("markdown")
+  markdown String  @default("")
   files    File[]  @relation("File_posts")
   images   Image[] @relation("Image_posts")
   author   User?   @relation("Post_author", fields: [authorId], references: [id])
@@ -86,38 +109,67 @@ model File {
   @@index([ownerId])
 }
 
+model ContentCategory {
+  id        String    @id @default(cuid())
+  name      String    @default("")
+  order     Int       @default(1)
+  published Boolean   @default(true)
+  contents  Content[] @relation("Content_category")
+  owner     User?     @relation("ContentCategory_owner", fields: [ownerId], references: [id])
+  ownerId   String?   @map("owner")
+
+  @@index([ownerId])
+}
+
 model Content {
-  id          String  @id @default(cuid())
-  category    String
-  title       String  @default("")
-  period      String  @default("")
-  subtitle    String  @default("")
+  id          String           @id @default(cuid())
+  category    ContentCategory? @relation("Content_category", fields: [categoryId], references: [id])
+  categoryId  String?          @map("category")
+  title       String           @default("")
+  period      String           @default("")
+  subtitle    String           @default("")
   state       String
-  description String  @default("")
-  images      Image[] @relation("Content_images")
-  links       Link[]  @relation("Content_links")
-  tags        Tag[]   @relation("Content_tags")
-  published   Boolean @default(true)
-  owner       User?   @relation("Content_owner", fields: [ownerId], references: [id])
-  ownerId     String? @map("owner")
+  description String           @default("")
+  images      Image[]          @relation("Content_images")
+  links       Link[]           @relation("Content_links")
+  tags        Tag[]            @relation("Content_tags")
+  published   Boolean          @default(true)
+  owner       User?            @relation("Content_owner", fields: [ownerId], references: [id])
+  ownerId     String?          @map("owner")
+
+  @@index([categoryId])
+  @@index([ownerId])
+}
+
+model SkillCategory {
+  id        String  @id @default(cuid())
+  name      String  @default("")
+  icon      String?
+  order     Int     @default(1)
+  published Boolean @default(true)
+  skills    Skill[] @relation("Skill_category")
+  owner     User?   @relation("SkillCategory_owner", fields: [ownerId], references: [id])
+  ownerId   String? @map("owner")
 
   @@index([ownerId])
 }
 
 model Skill {
-  id          String  @id @default(cuid())
-  category    String
-  title       String  @default("")
-  description String  @default("")
+  id          String         @id @default(cuid())
+  category    SkillCategory? @relation("Skill_category", fields: [categoryId], references: [id])
+  categoryId  String?        @map("category")
+  title       String         @default("")
+  description String         @default("")
   score       Int
   scoreMax    Int
-  href        String  @default("")
-  links       Link[]  @relation("Link_skills")
-  tags        Tag[]   @relation("Skill_tags")
-  published   Boolean @default(true)
-  owner       User?   @relation("Skill_owner", fields: [ownerId], references: [id])
-  ownerId     String? @map("owner")
+  href        String         @default("")
+  links       Link[]         @relation("Link_skills")
+  tags        Tag[]          @relation("Skill_tags")
+  published   Boolean        @default(true)
+  owner       User?          @relation("Skill_owner", fields: [ownerId], references: [id])
+  ownerId     String?        @map("owner")
 
+  @@index([categoryId])
   @@index([ownerId])
 }
 

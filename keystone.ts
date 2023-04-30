@@ -49,7 +49,7 @@ export default withAuth(
     graphql: {
       debug: !isRunningOnProduction,
       path: "/api/graphql",
-      playground: !isRunningOnProduction,
+      playground: true,
     },
     db: {
       // we're using sqlite for the fastest startup experience
@@ -80,6 +80,7 @@ export default withAuth(
         forcePathStyle: true,
       },
     },
+
     lists,
 
     session,
@@ -87,6 +88,7 @@ export default withAuth(
     ui: {
       isAccessAllowed: (context) => Boolean(context.session?.data),
     },
+
     telemetry: !isRunningOnProduction,
   })
 );

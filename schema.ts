@@ -10,9 +10,11 @@ import {
   text,
   timestamp,
   integer,
+  virtual,
 } from "@keystone-6/core/fields";
 import { document } from "@keystone-6/fields-document";
 import accessControls from "./helpers/accessControls";
+import { field } from "@keystone-6/core/dist/declarations/src/types/schema/schema-api-with-context";
 
 const { isAdmin, isAuthorized, filterByOwner, filterMyInfo, filterByAuthor } =
   accessControls;
@@ -139,8 +141,119 @@ export const lists: Lists = {
         many: true,
         ui: { hideCreate: true, displayMode: "count" },
       }),
+      ownedAboutMe: relationship({
+        ref: "AboutMe.owner",
+        many: false,
+        ui: { hideCreate: true },
+      }),
+      ownedSkillCategories: relationship({
+        ref: "SkillCategory.owner",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
+
+      ownedContentCategories: relationship({
+        ref: "ContentCategory.owner",
+        many: true,
+        ui: { hideCreate: true, displayMode: "count" },
+      }),
     },
   }),
+
+  /**
+   * AboutMe
+   */
+  AboutMe: list({
+    access: {
+      operation: {
+        query: isAuthorized,
+        create: isAuthorized,
+        update: isAuthorized,
+        delete: isAuthorized,
+      },
+      item: {
+        create: isAuthorized,
+        update: isAuthorized,
+        delete: isAuthorized,
+      },
+      filter: {
+        query: filterByAuthor,
+        update: filterByAuthor,
+        delete: filterByAuthor,
+      },
+    },
+
+    hooks: {
+      beforeOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        if (operation === "create") {
+          if (resolvedData && context.session?.data?.id) {
+            if (!resolvedData.owner) {
+              resolvedData.owner = {
+                connect: {
+                  id: context.session.data.id,
+                },
+              };
+            }
+          }
+        }
+      },
+    },
+
+    fields: {
+      title: text({ validation: { isRequired: true } }),
+      subtitle: text(),
+
+      intro: text({
+        validation: { isRequired: true },
+        ui: {
+          displayMode: "textarea",
+          createView: { fieldMode: "edit" },
+        },
+      }),
+      bio: text({
+        validation: { isRequired: true },
+        ui: {
+          displayMode: "textarea",
+          createView: { fieldMode: "edit" },
+        },
+      }),
+
+      name: text({ validation: { isRequired: true } }),
+      nameEn: text(),
+      siteTitle: text({ validation: { isRequired: true } }),
+      siteTitleEn: text(),
+      url: text({ validation: { isRequired: true } }),
+
+      twitter: text({ label: "Twitter username" }),
+      github: text({ label: "GitHub username" }),
+      facebook: text({ label: "Facebook username" }),
+      linkedin: text({ label: "Linkedin username" }),
+      instagram: text({ label: "Instagram username" }),
+
+      owner: relationship({
+        ref: "User.ownedAboutMe",
+        ui: {
+          displayMode: "cards",
+          cardFields: ["name"],
+          // inlineEdit: { fields: ["name", "email"] },
+          linkToItem: true,
+          inlineConnect: true,
+        },
+        many: false,
+      }),
+    },
+  }),
+
+  /**
+   * Post
+   */
   Post: list({
     // WARNING
     //   for this starter project, anyone can create, query, update and delete anything
@@ -166,6 +279,29 @@ export const lists: Lists = {
       },
     },
 
+    hooks: {
+      beforeOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        if (operation === "create") {
+          if (resolvedData && context.session?.data?.id) {
+            if (!resolvedData.author) {
+              resolvedData.author = {
+                connect: {
+                  id: context.session.data.id,
+                },
+              };
+            }
+          }
+        }
+      },
+    },
+
     // this is the fields for our Post list
     fields: {
       title: text({ validation: { isRequired: true } }),
@@ -187,8 +323,8 @@ export const lists: Lists = {
 
       markdown: text({
         // TODO: native type
-        db: { map: "markdown", isNullable: true },
-        validation: { isRequired: true },
+        // db: { map: "markdown", isNullable: true },
+        // validation: { isRequired: true },
         // isIndexed: 'unique',
         ui: {
           displayMode: "textarea",
@@ -291,9 +427,32 @@ export const lists: Lists = {
       },
     },
 
+    hooks: {
+      beforeOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        if (operation === "create") {
+          if (resolvedData && context.session?.data?.id) {
+            if (!resolvedData.owner) {
+              resolvedData.owner = {
+                connect: {
+                  id: context.session.data.id,
+                },
+              };
+            }
+          }
+        }
+      },
+    },
+
     // setting this to isHidden for the user interface prevents this list being visible in the Admin UI
     ui: {
-      isHidden: true,
+      isHidden: false,
     },
 
     // this is the fields for our Tag list
@@ -353,6 +512,29 @@ export const lists: Lists = {
       },
     },
 
+    hooks: {
+      beforeOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        if (operation === "create") {
+          if (resolvedData && context.session?.data?.id) {
+            if (!resolvedData.owner) {
+              resolvedData.owner = {
+                connect: {
+                  id: context.session.data.id,
+                },
+              };
+            }
+          }
+        }
+      },
+    },
+
     fields: {
       altText: text(),
       image: image({ storage: "minioImage" }),
@@ -386,7 +568,7 @@ export const lists: Lists = {
 
     // setting this to isHidden for the user interface prevents this list being visible in the Admin UI
     ui: {
-      isHidden: true,
+      isHidden: false,
     },
   }),
   /**
@@ -412,6 +594,30 @@ export const lists: Lists = {
         delete: filterByOwner,
       },
     },
+
+    hooks: {
+      beforeOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        if (operation === "create") {
+          if (resolvedData && context.session?.data?.id) {
+            if (!resolvedData.owner) {
+              resolvedData.owner = {
+                connect: {
+                  id: context.session.data.id,
+                },
+              };
+            }
+          }
+        }
+      },
+    },
+
     fields: {
       altText: text(),
       file: file({ storage: "minioFile" }),
@@ -434,7 +640,84 @@ export const lists: Lists = {
     },
     // setting this to isHidden for the user interface prevents this list being visible in the Admin UI
     ui: {
-      isHidden: true,
+      isHidden: false,
+    },
+  }),
+
+  /**
+   * ContentCategory
+   */
+  ContentCategory: list({
+    access: {
+      operation: {
+        query: isAuthorized,
+        create: isAuthorized,
+        update: isAuthorized,
+        delete: isAuthorized,
+      },
+      // item: {
+      //   create: isAdmin,
+      //   update: isAuthorized
+      //   delete: isAdmin
+      // },
+      filter: {
+        query: filterByOwner,
+        update: filterByOwner,
+        delete: filterByOwner,
+      },
+    },
+
+    hooks: {
+      beforeOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        if (operation === "create") {
+          if (resolvedData && context.session?.data?.id) {
+            if (!resolvedData.owner) {
+              resolvedData.owner = {
+                connect: {
+                  id: context.session.data.id,
+                },
+              };
+            }
+          }
+        }
+      },
+    },
+
+    fields: {
+      name: text({ validation: { isRequired: true } }),
+
+      order: integer({
+        validation: { isRequired: true },
+        defaultValue: 1,
+        isOrderable: true,
+      }),
+
+      published: checkbox({ defaultValue: true }),
+
+      contents: relationship({
+        ref: "Content.category",
+        many: true,
+        ui: {
+          hideCreate: true,
+        },
+      }),
+      owner: relationship({
+        ref: "User.ownedContentCategories",
+        ui: {
+          displayMode: "cards",
+          cardFields: ["name"],
+          linkToItem: true,
+          inlineConnect: true,
+        },
+        many: false,
+      }),
     },
   }),
 
@@ -460,17 +743,45 @@ export const lists: Lists = {
         delete: filterByOwner,
       },
     },
+
+    hooks: {
+      beforeOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        if (operation === "create") {
+          if (resolvedData && context.session?.data?.id) {
+            if (!resolvedData.owner) {
+              resolvedData.owner = {
+                connect: {
+                  id: context.session.data.id,
+                },
+              };
+            }
+          }
+        }
+      },
+    },
+
     fields: {
-      category: select({
-        options: [
-          { value: "Education", label: "Education" },
-          { value: "Work", label: "Work" },
-          { value: "Project", label: "Project" },
-          { value: "Portfolio", label: "Portfolio" },
-          { value: "Certificate", label: "Certificate" },
-        ],
-        validation: { isRequired: true },
+      category: relationship({
+        ref: "ContentCategory.contents",
+        many: false,
+        ui: {
+          displayMode: "select",
+          createView: {
+            fieldMode: "edit",
+          },
+          labelField: "name",
+        },
+        isOrderable: true,
+        isFilterable: true,
       }),
+
       title: text({ validation: { isRequired: true } }),
       period: text({ validation: { isRequired: true } }),
       subtitle: text(),
@@ -533,12 +844,12 @@ export const lists: Lists = {
 
         // this is some customisations for changing how this will look in the AdminUI
         ui: {
-          displayMode: "cards",
-          cardFields: ["name"],
-          inlineEdit: { fields: ["name"] },
-          linkToItem: true,
-          inlineConnect: true,
-          inlineCreate: { fields: ["name", "owner"] },
+          displayMode: "select",
+          // cardFields: ["name"],
+          // inlineEdit: { fields: ["name"] },
+          // linkToItem: true,
+          // inlineConnect: true,
+          // inlineCreate: { fields: ["name", "owner"] },
         },
       }),
 
@@ -546,6 +857,90 @@ export const lists: Lists = {
 
       owner: relationship({
         ref: "User.ownedContents",
+        ui: {
+          displayMode: "cards",
+          cardFields: ["name"],
+          linkToItem: true,
+          inlineConnect: true,
+        },
+        many: false,
+      }),
+    },
+  }),
+
+  /**
+   * SkillCategory
+   */
+  SkillCategory: list({
+    access: {
+      operation: {
+        query: isAuthorized,
+        create: isAuthorized,
+        update: isAuthorized,
+        delete: isAuthorized,
+      },
+      // item: {
+      //   create: isAdmin,
+      //   update: isAuthorized
+      //   delete: isAdmin
+      // },
+      filter: {
+        query: filterByOwner,
+        update: filterByOwner,
+        delete: filterByOwner,
+      },
+    },
+
+    hooks: {
+      beforeOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        if (operation === "create") {
+          if (resolvedData && context.session?.data?.id) {
+            if (!resolvedData.owner) {
+              resolvedData.owner = {
+                connect: {
+                  id: context.session.data.id,
+                },
+              };
+            }
+          }
+        }
+      },
+    },
+
+    fields: {
+      name: text({ validation: { isRequired: true } }),
+
+      icon: select({
+        options: [
+          { value: "star", label: "star" },
+          { value: "like", label: "like" },
+        ],
+      }),
+
+      order: integer({
+        validation: { isRequired: true },
+        defaultValue: 1,
+        isOrderable: true,
+      }),
+
+      published: checkbox({ defaultValue: true }),
+
+      skills: relationship({
+        ref: "Skill.category",
+        many: true,
+        ui: {
+          hideCreate: true,
+        },
+      }),
+      owner: relationship({
+        ref: "User.ownedSkillCategories",
         ui: {
           displayMode: "cards",
           cardFields: ["name"],
@@ -579,14 +974,43 @@ export const lists: Lists = {
         delete: filterByOwner,
       },
     },
+
+    hooks: {
+      beforeOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        if (operation === "create") {
+          if (resolvedData && context.session?.data?.id) {
+            if (!resolvedData.owner) {
+              resolvedData.owner = {
+                connect: {
+                  id: context.session.data.id,
+                },
+              };
+            }
+          }
+        }
+      },
+    },
+
     fields: {
-      category: select({
-        options: [
-          { value: "Programming Language", label: "Programming Language" },
-          { value: "Framework", label: "Framework" },
-          { value: "Cloud", label: "Cloud" },
-        ],
-        validation: { isRequired: true },
+      category: relationship({
+        ref: "SkillCategory.skills",
+        many: false,
+        ui: {
+          displayMode: "select",
+          createView: {
+            fieldMode: "edit",
+          },
+          labelField: "name",
+        },
+        isOrderable: true,
+        isFilterable: true,
       }),
 
       title: text({ validation: { isRequired: true } }),
@@ -630,12 +1054,13 @@ export const lists: Lists = {
 
         // this is some customisations for changing how this will look in the AdminUI
         ui: {
-          displayMode: "cards",
-          cardFields: ["name"],
-          inlineEdit: { fields: ["name"] },
-          linkToItem: true,
-          inlineConnect: true,
-          inlineCreate: { fields: ["name", "owner"] },
+          displayMode: "select",
+          // cardFields: ["name"],
+          // inlineEdit: { fields: ["name"] },
+          // linkToItem: true,
+          // inlineConnect: true,
+          // inlineCreate: { fields: ["name", "owner"] },
+          // createView:
         },
       }),
 
@@ -655,7 +1080,7 @@ export const lists: Lists = {
   }),
 
   /**
-   *
+   * Link
    */
   Link: list({
     access: {
@@ -676,6 +1101,30 @@ export const lists: Lists = {
         delete: filterByOwner,
       },
     },
+
+    hooks: {
+      beforeOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        if (operation === "create") {
+          if (resolvedData && context.session?.data?.id) {
+            if (!resolvedData.owner) {
+              resolvedData.owner = {
+                connect: {
+                  id: context.session.data.id,
+                },
+              };
+            }
+          }
+        }
+      },
+    },
+
     fields: {
       title: text({ validation: { isRequired: true } }),
       href: text({ validation: { isRequired: true } }),
