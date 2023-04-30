@@ -49,7 +49,7 @@ export default withAuth(
     graphql: {
       debug: !isRunningOnProduction,
       path: "/api/graphql",
-      playground: true,
+      playground: !isRunningOnProduction,
     },
     db: {
       // we're using sqlite for the fastest startup experience
