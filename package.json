@@ -1,10 +1,10 @@
 {
   "name": "keystone-app",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "private": true,
   "scripts": {
     "dev": "keystone dev",
-    "start": "keystone start --with-migrations",
+    "start": "keystone start",
     "build": "keystone build",
     "prisma": "keystone prisma",
     "postinstall": "keystone build --no-ui --frozen",
