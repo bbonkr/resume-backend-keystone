@@ -1,13 +1,16 @@
 {
   "name": "keystone-app",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "private": true,
   "scripts": {
     "dev": "keystone dev",
-    "start": "keystone start",
+    "start": "keystone start --with-migrations",
     "build": "keystone build",
     "prisma": "keystone prisma",
-    "postinstall": "keystone build --no-ui --frozen"
+    "postinstall": "keystone build --no-ui --frozen",
+    "prisma:migrate": "keystone prisma migrate dev",
+    "prisma:studio": "keystone prisma studio",
+    "prisma:push": "keystone prisma push"
   },
   "dependencies": {
     "@keystone-6/auth": "^7.0.0",

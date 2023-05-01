@@ -4,6 +4,9 @@ WORKDIR /usr/src/app
 
 COPY --chown=node:node . .
 
+# update npm
+RUN npm install -g npm
+
 RUN npm install
 
 ENV NODE_ENV=production
@@ -19,5 +22,8 @@ ENV NODE_ENV=production
 EXPOSE ${PORT}
 
 USER node
+
+# Create data directory as node user
+RUN mkdir -p data
 
 CMD ["npm", "start"]

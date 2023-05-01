@@ -31,7 +31,7 @@ const {
   S3_ENDPOINT: endpoint = "http://localhost:9000",
 } = process.env;
 
-const dbFilePath = process.env.DB_FILEPATH ?? "./data/keystone.db";
+const databaseUrl = process.env.DATABASE_URL || "file:./keystone.db";
 
 export default withAuth(
   config({
@@ -50,13 +50,18 @@ export default withAuth(
       debug: !isRunningOnProduction,
       path: "/api/graphql",
       playground: !isRunningOnProduction,
+      cors: {
+        origin: getAllowdOrigins(),
+        credentials: true,
+      },
     },
+
     db: {
       // we're using sqlite for the fastest startup experience
       //   for more information on what database might be appropriate for you
       //   see https://keystonejs.com/docs/guides/choosing-a-database#title
       provider: "sqlite",
-      url: `file:${dbFilePath}`,
+      url: databaseUrl,
     },
     storage: {
       minioImage: {
@@ -86,7 +91,7 @@ export default withAuth(
     session,
 
     ui: {
-      isAccessAllowed: (context) => Boolean(context.session?.data),
+      isAccessAllowed: (context) => Boolean(context.session?.data?.id),
     },
 
     telemetry: !isRunningOnProduction,
