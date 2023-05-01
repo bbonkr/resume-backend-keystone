@@ -14,7 +14,6 @@ import {
 } from "@keystone-6/core/fields";
 import { document } from "@keystone-6/fields-document";
 import accessControls from "./helpers/accessControls";
-import { field } from "@keystone-6/core/dist/declarations/src/types/schema/schema-api-with-context";
 
 const { isAdmin, isAuthorized, filterByOwner, filterMyInfo, filterByAuthor } =
   accessControls;
@@ -177,9 +176,9 @@ export const lists: Lists = {
         delete: isAuthorized,
       },
       filter: {
-        query: filterByAuthor,
-        update: filterByAuthor,
-        delete: filterByAuthor,
+        query: filterByOwner,
+        update: filterByOwner,
+        delete: filterByOwner,
       },
     },
 
@@ -322,10 +321,6 @@ export const lists: Lists = {
       }),
 
       markdown: text({
-        // TODO: native type
-        // db: { map: "markdown", isNullable: true },
-        // validation: { isRequired: true },
-        // isIndexed: 'unique',
         ui: {
           displayMode: "textarea",
           createView: { fieldMode: "edit" },

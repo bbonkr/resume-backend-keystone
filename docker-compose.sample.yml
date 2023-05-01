@@ -19,5 +19,5 @@ services:
       - S3_ENDPOINT=
       - TZ=Asia/Seoul
     volumes:
-      - "./path/to/dbfile/directory:/home/node/app/data"
+      - "./path/to/dbfile/directory:/usr/src/app/data"
     network_mode: bridge

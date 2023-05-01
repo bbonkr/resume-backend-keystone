@@ -4,9 +4,7 @@ FROM node:18-bullseye-slim
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PATH=$PATH:/home/node/.npm-global/bin
 
-ENV HOME=/home/node
-
-WORKDIR $HOME/app
+WORKDIR /usr/src/app
 
 COPY --chown=node:node . .
 
@@ -24,10 +22,6 @@ RUN npm run build
 ENV PORT=3000
 
 EXPOSE ${PORT}
-
-# Create data directory as node user
-RUN mkdir -p data
-RUN chown node:node data
 
 USER node
 
