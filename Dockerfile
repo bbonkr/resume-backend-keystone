@@ -1,6 +1,12 @@
 FROM node:18-bullseye-slim
 
-WORKDIR /usr/src/app
+# https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#global-npm-dependencies
+ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
+ENV PATH=$PATH:/home/node/.npm-global/bin
+
+ENV HOME=/home/node
+
+WORKDIR $HOME/app
 
 COPY --chown=node:node . .
 
@@ -17,13 +23,12 @@ RUN npm run build
 
 ENV PORT=3000
 
-ENV NODE_ENV=production
-
 EXPOSE ${PORT}
-
-USER node
 
 # Create data directory as node user
 RUN mkdir -p data
+RUN chown node:node data
+
+USER node
 
 CMD ["npm", "start"]
