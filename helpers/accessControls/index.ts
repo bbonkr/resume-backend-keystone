@@ -1,18 +1,16 @@
-import { BaseListTypeInfo } from "@keystone-6/core/types";
 import { Session } from "../../types/Session";
 import { UserData } from "../../types/UserData";
-import { BaseAccessArgs } from "@keystone-6/core/dist/declarations/src/types/config/access-control";
 
-const isAdmin = ({ session }: { session: Session }) =>
+const isAdmin = ({ session }: { session?: Session }) =>
   session?.data.isAdmin ?? false;
 
-const isUser = ({ session, item }: { session: Session; item: UserData }) =>
+const isUser = ({ session, item }: { session?: Session; item: UserData }) =>
   session?.data.id == item.id;
 
-const isAuthorized = ({ session }: { session: Session }) =>
+const isAuthorized = ({ session }: { session?: Session }) =>
   Boolean(session?.data?.id);
 
-const filterMyInfo = ({ session }: { session: Session }) => {
+const filterMyInfo = ({ session }: { session?: Session }) => {
   if (session?.data.isAdmin) {
     return true;
   }
@@ -28,7 +26,7 @@ const filterMyInfo = ({ session }: { session: Session }) => {
   return false;
 };
 
-const filterOwnedItems = ({ session }: { session: Session }) => {
+const filterOwnedItems = ({ session }: { session?: Session }) => {
   if (session?.data?.isAdmin) {
     return true;
   }
@@ -46,7 +44,7 @@ const filterOwnedItems = ({ session }: { session: Session }) => {
   return false;
 };
 
-const filterByOwner = ({ session }: { session: Session }) => {
+const filterByOwner = ({ session }: { session?: Session }) => {
   if (session?.data?.isAdmin ?? true) {
     return true;
   }
@@ -63,7 +61,7 @@ const filterByOwner = ({ session }: { session: Session }) => {
   return false;
 };
 
-const filterByAuthor = ({ session }: { session: Session }) => {
+const filterByAuthor = ({ session }: { session?: Session }) => {
   if (session?.data?.isAdmin ?? true) {
     return true;
   }
