@@ -10,7 +10,6 @@ import {
   text,
   timestamp,
   integer,
-  virtual,
 } from "@keystone-6/core/fields";
 import { document } from "@keystone-6/fields-document";
 import accessControls from "./helpers/accessControls";
