@@ -215,10 +215,6 @@ export const lists: Lists = {
         resolvedData,
         context,
       }) => {
-        const userId = context.session?.data?.id;
-
-        console.info("[AboutMe:afterOperation]: item?.ownerId=", item?.ownerId);
-
         const user = await context.query.User.findOne({
           where: { id: item?.ownerId },
           query: "id resumeUrl revalidateKey",
@@ -793,6 +789,32 @@ export const lists: Lists = {
           }
         }
       },
+
+      afterOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        const user = await context.query.User.findOne({
+          where: { id: item?.ownerId },
+          query: "id resumeUrl revalidateKey",
+        });
+
+        if (user) {
+          const { resumeUrl, revalidateKey } = user;
+
+          if (
+            resumeUrl &&
+            revalidateKey &&
+            typeof resumeUrl === "string" &&
+            typeof revalidateKey === "string"
+          )
+            await revalidateClientPage(resumeUrl, revalidateKey);
+        }
+      },
     },
 
     fields: {
@@ -1022,6 +1044,32 @@ export const lists: Lists = {
               };
             }
           }
+        }
+      },
+
+      afterOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        const user = await context.query.User.findOne({
+          where: { id: item?.ownerId },
+          query: "id resumeUrl revalidateKey",
+        });
+
+        if (user) {
+          const { resumeUrl, revalidateKey } = user;
+
+          if (
+            resumeUrl &&
+            revalidateKey &&
+            typeof resumeUrl === "string" &&
+            typeof revalidateKey === "string"
+          )
+            await revalidateClientPage(resumeUrl, revalidateKey);
         }
       },
     },
