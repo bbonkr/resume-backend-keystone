@@ -17,6 +17,8 @@ model User {
   username               String            @unique @default("")
   email                  String            @unique @default("")
   password               String
+  resumeUrl              String            @default("")
+  revalidateKey          String            @default("")
   avatar                 Image?            @relation("Image_users")
   links                  Link[]            @relation("Link_users")
   createdAt              DateTime?         @default(now())
