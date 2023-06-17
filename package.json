@@ -1,6 +1,6 @@
 {
   "name": "keystone-app",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "scripts": {
     "dev": "keystone dev",
@@ -9,6 +9,7 @@
     "prisma": "keystone prisma",
     "postinstall": "keystone build --no-ui --frozen",
     "prisma:migrate": "keystone prisma migrate dev",
+    "prisma:deploy": "keystone prisma migrate deploy",
     "prisma:studio": "keystone prisma studio",
     "prisma:push": "keystone prisma push"
   },
