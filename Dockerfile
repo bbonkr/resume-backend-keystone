@@ -1,5 +1,7 @@
 FROM node:18-bullseye-slim
 
+USER node
+
 # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#global-npm-dependencies
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PATH=$PATH:/home/node/.npm-global/bin
@@ -22,7 +24,5 @@ RUN npm run build
 ENV PORT=3000
 
 EXPOSE ${PORT}
-
-USER node
 
 CMD ["npm", "start"]
