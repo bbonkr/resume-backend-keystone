@@ -13,6 +13,7 @@ import {
 } from "@keystone-6/core/fields";
 import { document } from "@keystone-6/fields-document";
 import accessControls from "./helpers/accessControls";
+import revalidateClientPage from "./helpers/revalidateClientHelper";
 
 const { isAdmin, isAuthorized, filterByOwner, filterMyInfo, filterByAuthor } =
   accessControls;
@@ -66,6 +67,9 @@ export const lists: Lists = {
       }),
 
       password: password({ validation: { isRequired: true } }),
+
+      resumeUrl: text(),
+      revalidateKey: text(),
 
       avatar: relationship({
         ref: "Image.users",
@@ -200,6 +204,36 @@ export const lists: Lists = {
               };
             }
           }
+        }
+      },
+
+      afterOperation: async ({
+        listKey,
+        operation,
+        inputData,
+        item,
+        resolvedData,
+        context,
+      }) => {
+        const userId = context.session?.data?.id;
+
+        console.info("[AboutMe:afterOperation]: item?.ownerId=", item?.ownerId);
+
+        const user = await context.query.User.findOne({
+          where: { id: item?.ownerId },
+          query: "id resumeUrl revalidateKey",
+        });
+
+        if (user) {
+          const { resumeUrl, revalidateKey } = user;
+
+          if (
+            resumeUrl &&
+            revalidateKey &&
+            typeof resumeUrl === "string" &&
+            typeof revalidateKey === "string"
+          )
+            await revalidateClientPage(resumeUrl, revalidateKey);
         }
       },
     },

@@ -7,6 +7,8 @@ type User {
   username: String
   email: String
   password: PasswordState
+  resumeUrl: String
+  revalidateKey: String
   avatar: Image
   links(where: LinkWhereInput! = {}, orderBy: [LinkOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LinkWhereUniqueInput): [Link!]
   linksCount(where: LinkWhereInput! = {}): Int
@@ -53,6 +55,8 @@ input UserWhereInput {
   name: StringFilter
   username: StringFilter
   email: StringFilter
+  resumeUrl: StringFilter
+  revalidateKey: StringFilter
   avatar: ImageWhereInput
   links: LinkManyRelationFilter
   createdAt: DateTimeNullableFilter
@@ -183,6 +187,8 @@ input UserOrderByInput {
   name: OrderDirection
   username: OrderDirection
   email: OrderDirection
+  resumeUrl: OrderDirection
+  revalidateKey: OrderDirection
   createdAt: OrderDirection
   isAdmin: OrderDirection
 }
@@ -197,6 +203,8 @@ input UserUpdateInput {
   username: String
   email: String
   password: String
+  resumeUrl: String
+  revalidateKey: String
   avatar: ImageRelateToOneForUpdateInput
   links: LinkRelateToManyForUpdateInput
   createdAt: DateTime
@@ -298,6 +306,8 @@ input UserCreateInput {
   username: String
   email: String
   password: String
+  resumeUrl: String
+  revalidateKey: String
   avatar: ImageRelateToOneForCreateInput
   links: LinkRelateToManyForCreateInput
   createdAt: DateTime
